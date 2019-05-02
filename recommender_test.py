@@ -27,7 +27,7 @@ def main(spark, model_file, test_file):
     predictions = model.transform(test)
 #     pred = predictions.sort('prediction', ascending=False).groupBy('user')
     predictions.createOrReplaceTempView('df')
-    pred = spark.sql("SELECT user, max(item) as item, max(prediction) as prediction, max(count) as count, COUNT(*) as num FROM df GROUP BY user ORDER BY count DESC HAVING num <= 500")
+    pred = spark.sql("SELECT user, max(item) as item, max(prediction) as prediction, max(count) as count, COUNT(*) as num FROM df GROUP BY user [ORDER BY prediction DESC] HAVING num <= 500")
     evaluator = RegressionEvaluator(metricName="rmse",labelCol="count",predictionCol="prediction")
     rmse = evaluator.evaluate(pred)
     print("Root-mean-square error = " + str(rmse))
