@@ -9,6 +9,7 @@ from pyspark.sql import SparkSession
 from pyspark.ml import Pipeline
 from pyspark.ml.recommendation import ALS
 from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
+from pyspark.ml.evaluation import RegressionEvaluator
 
 def main(spark, data_file, model_file):
     '''
@@ -35,7 +36,7 @@ def main(spark, data_file, model_file):
     #pipeline and crossvalidation
     pipeline = Pipeline(stages = [indexer_user, indexer_item, als])
     paramGrid = ParamGridBuilder().addGrid(als.rank, rank).addGrid(als.regParam,
-    regularization).addGrid(also.alpha, alpha).build()
+    regularization).addGrid(als.alpha, alpha).build()
 
     crossval = CrossValidator(estimator = pipeline, estimatorParamMaps =
     paramGrid, evaluator = RegressionEvaluator(metricName="rmse",
