@@ -35,7 +35,7 @@ if __name__ == "__main__":
     data_file = sys.argv[1]
 
     # And the location to store the trained model
-    model_file = sys.argv[2]
+    new_data_file = sys.argv[2]
 
     # Call our main routine
     main(spark, data_file, new_data_file)
