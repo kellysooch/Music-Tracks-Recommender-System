@@ -19,12 +19,13 @@ def main(spark, data_file, new_data_file):
 
     # Load the parquet file
     train = spark.read.parquet(data_file)
+    train_samp = train.sample(withReplacement = False, fraction = 0.1)
     
     indexer_user = StringIndexer(inputCol="user_id", outputCol="user", handleInvalid="skip")
     indexer_item = StringIndexer(inputCol="track_id", outputCol="item", handleInvalid="skip")
+    
     pipeline = Pipeline(stages=[indexer_user, indexer_item])
     transformed_train = pipeline.fit(train).transform(train)
-    repartitioned_train =  transformed_train.repartition(50000)
     repartitioned_train.write.parquet(new_data_file)
     
 if __name__ == "__main__":
