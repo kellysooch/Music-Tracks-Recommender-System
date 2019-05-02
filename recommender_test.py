@@ -25,7 +25,7 @@ def main(spark, model_file, test_file):
     model = PipelineModel.load(model_file)
     
     predictions = model.transform(test)
-    evaluator = RegressionEvaluator(metricName="rmse", labelCol="rating",predictionCol="prediction")
+    evaluator = RegressionEvaluator(metricName="rmse", labelCol="count",predictionCol="prediction")
     rmse = evaluator.evaluate(predictions)
     print("Root-mean-square error = " + str(rmse))
 
