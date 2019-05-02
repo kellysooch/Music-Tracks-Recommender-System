@@ -26,7 +26,7 @@ def main(spark, data_file, model_file):
     indexer_item = StringIndexer(inputCol="track_id", outputCol="item", handleInvalid="skip")
     
     als = ALS(userCol="user", itemCol="item", ratingCol="count")
-    pipeline = Pipeline(stages=[indexer_user, indexer_item, als])
+    pipeline = Pipeline(stages = [indexer_user, indexer_item, als])
     model = pipeline.fit(train)
     model.save(model_file)
     
