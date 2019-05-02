@@ -28,7 +28,7 @@ def main(spark, model_file, test_file):
     pipeline = Pipeline(stages=[indexer_user, indexer_item])
     transformed_test = pipeline.fit(test).transform(test)
     
-    model = PipelineModel.load(model_file)
+    model = ALS.load(model_file)
     
     predictions = model.transform(transformed_test)
     user_recs = model.recommendForAllUsers(500)
