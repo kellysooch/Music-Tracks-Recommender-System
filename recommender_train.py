@@ -21,14 +21,14 @@ def main(spark, data_file, model_file):
 
     # Load the parquet file
     train = spark.read.parquet(data_file)
-    train_samp = train.sample(withReplacement = False, fraction = 0.1)
+#     train_samp = train.sample(withReplacement = False, fraction = 0.1)
     
-    indexer_user = StringIndexer(inputCol="user_id", outputCol="user", handleInvalid="skip")
-    indexer_item = StringIndexer(inputCol="track_id", outputCol="item", handleInvalid="skip")
+#     indexer_user = StringIndexer(inputCol="user_id", outputCol="user", handleInvalid="skip")
+#     indexer_item = StringIndexer(inputCol="track_id", outputCol="item", handleInvalid="skip")
     
     als = ALS(userCol="user", itemCol="item", ratingCol="count")
-    pipeline = Pipeline(stages = [indexer_user, indexer_item, als])
-    model = pipeline.fit(train_samp)
+#     pipeline = Pipeline(stages = [indexer_user, indexer_item, als])
+    model = als.fit(train_samp)
     model.save(model_file)
     
     
