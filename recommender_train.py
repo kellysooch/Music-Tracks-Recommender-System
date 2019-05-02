@@ -21,7 +21,7 @@ def main(spark, data_file, model_file):
 
     # Load the parquet file
     train = spark.read.parquet(data_file)
-    train = train.sample(withReplacement = False, 0.01)
+    train = train.sample(withReplacement = False, 0.005)
     
     indexer_user = StringIndexer(inputCol="user_id", outputCol="user", handleInvalid="skip")
     indexer_item = StringIndexer(inputCol="track_id", outputCol="item", handleInvalid="skip")
