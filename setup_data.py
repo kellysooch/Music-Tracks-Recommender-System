@@ -25,7 +25,7 @@ def main(spark, data_file, new_data_file):
     indexer_item = StringIndexer(inputCol="track_id", outputCol="item", handleInvalid="skip")
     
     pipeline = Pipeline(stages=[indexer_user, indexer_item])
-    transformed_train = pipeline.fit(train).transform(train)
+    transformed_train = pipeline.fit(train_samp).transform(train_samp)
     repartitioned_train.write.parquet(new_data_file)
     
 if __name__ == "__main__":

@@ -22,6 +22,12 @@ def main(spark, model_file, test_file):
 
     # Load the parquet file
     test = spark.read.parquet(test_file)
+    indexer_user = StringIndexer(inputCol="user_id", outputCol="user", handleInvalid="skip")
+    indexer_item = StringIndexer(inputCol="track_id", outputCol="item", handleInvalid="skip")
+    
+    pipeline = Pipeline(stages=[indexer_user, indexer_item])
+    transformed_train = pipeline.fit(test).transform(test)
+    
     model = PipelineModel.load(model_file)
     
     predictions = model.transform(test)
