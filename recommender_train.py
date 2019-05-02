@@ -28,7 +28,7 @@ def main(spark, data_file, model_file):
     
     als = ALS(userCol="user", itemCol="item", ratingCol="count")
 #     pipeline = Pipeline(stages = [indexer_user, indexer_item, als])
-    model = als.fit(train_samp)
+    model = als.fit(train)
     model.save(model_file)
     
     
