@@ -25,7 +25,7 @@ def main(spark, model_file, test_file):
     model = PipelineModel.load(model_file)
     
     predictions = model.transform(test)
-    pred = predictions.sort(['prediction'].desc()).groupBy('user').collect(500)
+    pred = predictions.sort('prediction', ascending=False).groupBy('user').head(500)
     evaluator = RegressionEvaluator(metricName="rmse", labelCol="count",predictionCol="prediction")
     rmse = evaluator.evaluate(pred)
     print("Root-mean-square error = " + str(rmse))
