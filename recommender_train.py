@@ -1,10 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-'''Part 2: supervised model training
-Usage:
-    $ spark-submit supervised_train.py hdfs:/path/to/file.parquet hdfs:/path/to/save/model
-'''
-
 
 # We need sys to get the command line arguments
 import sys
@@ -16,7 +11,7 @@ from pyspark.ml.recommendation import ALS
 
 
 def main(spark, data_file, model_file):
-    '''Main routine for supervised training
+    '''
     Parameters
     ----------
     spark : SparkSession object
@@ -25,14 +20,22 @@ def main(spark, data_file, model_file):
     '''
 
     # Load the parquet file
-    df = spark.read.parquet(data_file)
+    train = spark.read.parquet(data_file)
+    
+    indexer_user = StringIndexer(inputCol="user_id", outputCol="user", handleInvalid="skip")
+    indexer_item = StringIndexer(inputCol="track_id", outputCol="item", handleInvalid="skip")
+    
+    als = ALS(userCol="user", itemCol="item", ratingCol="count")
+    pipeline = Pipeline(stages=[indexer_user, indexer_item, als])
+    model = pipeline.fit(train)
+    model.save(model_file)
     
     
 
 if __name__ == "__main__":
 
     # Create the spark session object
-    spark = SparkSession.builder.appName('supervised_train').getOrCreate()
+    spark = SparkSession.builder.appName('recommender_train').getOrCreate()
 
     # Get the filename from the command line
     data_file = sys.argv[1]
