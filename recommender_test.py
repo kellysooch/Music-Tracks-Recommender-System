@@ -25,12 +25,12 @@ def main(spark, model_file, test_file):
     model = PipelineModel.load(model_file)
     
     predictions = model.transform(test)
-#     pred = predictions.sort('prediction', ascending=False).groupBy('user')
-    sorted_preds = predictions.sort('prediction', ascending = False)
-    sorted_preds.createOrReplaceTempView('df')
-    pred = spark.sql("SELECT user, max(item) as item, max(prediction) as prediction, max(count) as count, COUNT(*) as num FROM df GROUP BY user HAVING num <= 500")
+    user_recs = model.recommendForAllUsers(500)
+#     sorted_preds = predictions.sort('prediction', ascending = False)
+#     sorted_preds.createOrReplaceTempView('df')
+#     pred = spark.sql("SELECT user, max(item) as item, max(prediction) as prediction, max(count) as count, COUNT(*) as num FROM df GROUP BY user HAVING num <= 500")
     evaluator = RegressionEvaluator(metricName="rmse",labelCol="count",predictionCol="prediction")
-    rmse = evaluator.evaluate(pred)
+    rmse = evaluator.evaluate(user_recs)
     print("Root-mean-square error = " + str(rmse))
 
 if __name__ == "__main__":
