@@ -26,7 +26,7 @@ def main(spark, data_file, new_data_file):
     
     pipeline = Pipeline(stages=[indexer_user, indexer_item])
     transformed_train = pipeline.fit(train_samp).transform(train_samp)
-    repartitioned_train.write.parquet(new_data_file)
+    transformed_train.write.parquet(new_data_file)
     
 if __name__ == "__main__":
 
