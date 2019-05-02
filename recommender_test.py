@@ -25,7 +25,9 @@ def main(spark, model_file, test_file):
     model = PipelineModel.load(model_file)
     
     predictions = model.transform(test)
-    print(predictions)
+    predictions.createOrReplaceTempView('df')
+    results = spark.sql('SELECT * FROM df LIMIT 50')
+    print(results)
     evaluator = RegressionEvaluator(metricName="rmse", labelCol="count",predictionCol="prediction")
     rmse = evaluator.evaluate(predictions)
     print("Root-mean-square error = " + str(rmse))
