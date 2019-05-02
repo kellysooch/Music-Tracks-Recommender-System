@@ -26,11 +26,11 @@ def main(spark, model_file, test_file):
     indexer_item = StringIndexer(inputCol="track_id", outputCol="item", handleInvalid="skip")
     
     pipeline = Pipeline(stages=[indexer_user, indexer_item])
-    transformed_train = pipeline.fit(test).transform(test)
+    transformed_test = pipeline.fit(test).transform(test)
     
     model = PipelineModel.load(model_file)
     
-    predictions = model.transform(test)
+    predictions = model.transform(transformed_test)
     user_recs = model.recommendForAllUsers(500)
 #     sorted_preds = predictions.sort('prediction', ascending = False)
 #     sorted_preds.createOrReplaceTempView('df')
