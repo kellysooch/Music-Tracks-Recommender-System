@@ -8,6 +8,7 @@ from pyspark.ml.feature import StringIndexer
 from pyspark.sql import SparkSession
 from pyspark.ml import Pipeline
 from pyspark.ml.recommendation import ALS
+from pyspark.ml.recommendation import ALSModel
 from pyspark.ml import PipelineModel
 from pyspark.ml.evaluation import RegressionEvaluator
 
@@ -28,7 +29,7 @@ def main(spark, model_file, test_file):
     pipeline = Pipeline(stages=[indexer_user, indexer_item])
     transformed_test = pipeline.fit(test).transform(test)
     
-    model = ALS.load(model_file)
+    model = ALSModel.load(model_file)
     
     predictions = model.transform(transformed_test)
     user_recs = model.recommendForAllUsers(500)
