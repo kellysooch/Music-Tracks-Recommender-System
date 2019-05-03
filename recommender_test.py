@@ -33,12 +33,13 @@ def main(spark, model_file, test_file):
     
     predictions = model.transform(transformed_test)
     user_recs = model.recommendForAllUsers(500)
+    user_recs.take(10)
 #     sorted_preds = predictions.sort('prediction', ascending = False)
 #     sorted_preds.createOrReplaceTempView('df')
 #     pred = spark.sql("SELECT user, max(item) as item, max(prediction) as prediction, max(count) as count, COUNT(*) as num FROM df GROUP BY user HAVING num <= 500")
-    evaluator = RegressionEvaluator(metricName="rmse",labelCol="count",predictionCol="prediction")
-    rmse = evaluator.evaluate(user_recs)
-    print("Root-mean-square error = " + str(rmse))
+#     evaluator = RegressionEvaluator(metricName="rmse",labelCol="count",predictionCol="prediction")
+#     rmse = evaluator.evaluate(user_recs)
+#     print("Root-mean-square error = " + str(rmse))
 
 if __name__ == "__main__":
 
