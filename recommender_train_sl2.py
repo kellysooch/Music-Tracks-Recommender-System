@@ -24,8 +24,8 @@ def main(spark, train_data_file, val_data_file, model_file):
     train = spark.read.parquet(train_data_file)
     val = spark.read.parquet(val_data_file)
 
-    train_sample = train.sample(withReplacement = False, fraction = .01)
-    val_sample = train.sample(withReplacement = False, fraction = .01)
+    train = train.sample(withReplacement = False, fraction = .01)
+    #val_sample = train.sample(withReplacement = False, fraction = .01)
 
     #transform data
     indexer_user = StringIndexer(inputCol="user_id", outputCol="user",
@@ -33,25 +33,25 @@ def main(spark, train_data_file, val_data_file, model_file):
     indexer_item = StringIndexer(inputCol="track_id", outputCol="item",
     handleInvalid="skip").fit(train)
     
-    df_train = indexer_user.transform(train_sample)
-    df_train = indexer_item.transform(df_train)
+    train = indexer_user.transform(train)
+    train = indexer_item.transform(train)
 
-    df_val = indexer_user.transform(val_sample)
-    df_val = indexer_item.transform(df_val)
+    val = indexer_user.transform(val)
+    val = indexer_item.transform(val)
 
-    df_val.show(5)
-    df_train.show(5)
+    #val.show(5)
+    #train.show(5)
     
     #als = ALS(userCol="user", itemCol="item", implicitPrefs = True, ratingCol="count")
     
     #grid search values
-    #rank = [5, 10, 15] #default is 10
-    #regularization = [ .01, .1, 1, 10] #default is 1
-    #alpha = [ .01, .1, 1, 10] #default is 1
+    rank = [5, 10, 15] #default is 10
+    regularization = [ .01, .1, 1, 10] #default is 1
+    alpha = [ .01, .1, 1, 10] #default is 1
     
-    rank = [10]
-    regularization = [1.0]
-    alpha = [1.0]
+    #rank = [10]
+    #regularization = [1.0]
+    #alpha = [1.0]
 
     #pipeline and crossvalidation
     #pipeline = Pipeline(stages = [indexer_user, indexer_item, als])
@@ -76,8 +76,8 @@ def main(spark, train_data_file, val_data_file, model_file):
             for k in alpha:
                 als = ALS(userCol = 'user', itemCol = 'item', implicitPrefs =
                 True, ratingCol = 'count', rank = i, regParam = j, alpha = k)
-                output = als.fit(df_train)
-                predictions = output.transform(df_val)
+                output = als.fit(train)
+                predictions = output.transform(val)
                 evaluator = RegressionEvaluator(metricName="rmse", labelCol="count",predictionCol="prediction")
                 rmse = evaluator.evaluate(predictions)
                 rank_list.append(i)
@@ -89,6 +89,11 @@ def main(spark, train_data_file, val_data_file, model_file):
     print(reg_list)
     print(alpha_list)
     print(rmses)
+    print('Min RMSE value: %f' %min(rmses))
+    ind = np.argmin(rmses)
+    print('Rank: %f' %rank_list[ind])
+    print('Reg: %f' %reg_list[ind])
+    print('Alpha: %f' %alpha_list[ind])
 
 if __name__ == "__main__":
 
