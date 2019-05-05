@@ -17,6 +17,9 @@ from pyspark.sql import SparkSession
 from pyspark.ml import PipelineModel
 from pyspark.ml.evaluation import RegressionEvaluator
 from pyspark.mllib.evaluation import RankingMetrics 
+#from pyspark import SparkContext, SparkConf
+#conf = SparkConf().setAppName(appName).setMaster(master)
+#sc = SparkContext(conf=conf)
 
 # TODO: you may need to add imports here
 
@@ -56,7 +59,8 @@ def main(spark, model_file, data_file):
     #rmse = evaluator.evaluate(userRecs)
     #print('RMSE = ' + str(rmse))
     
-    predictionAndLabels = predictions.select('prediction', 'count').rdd
+    predictionAndLabels = predictions.select('prediction',
+    'count')
     metrics = RankingMetrics(predictionAndLabels)
     precision = metrics.precisionAt(500)
     ndcg = metrics.ndcgAt(500)

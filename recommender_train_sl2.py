@@ -10,6 +10,7 @@ from pyspark.ml import Pipeline
 from pyspark.ml.recommendation import ALS
 from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
 from pyspark.ml.evaluation import RegressionEvaluator
+import numpy as np
 
 def main(spark, train_data_file, val_data_file, model_file):
     '''
@@ -24,8 +25,7 @@ def main(spark, train_data_file, val_data_file, model_file):
     train = spark.read.parquet(train_data_file)
     val = spark.read.parquet(val_data_file)
 
-    train = train.sample(withReplacement = False, fraction = .01)
-    #val_sample = train.sample(withReplacement = False, fraction = .01)
+    train = train.sample(withReplacement = False, fraction = .1)
 
     #transform data
     indexer_user = StringIndexer(inputCol="user_id", outputCol="user",
@@ -35,24 +35,14 @@ def main(spark, train_data_file, val_data_file, model_file):
     
     train = indexer_user.transform(train)
     train = indexer_item.transform(train)
-
     val = indexer_user.transform(val)
     val = indexer_item.transform(val)
 
-    #val.show(5)
-    #train.show(5)
-    
-    #als = ALS(userCol="user", itemCol="item", implicitPrefs = True, ratingCol="count")
-    
     #grid search values
     rank = [5, 10, 15] #default is 10
     regularization = [ .01, .1, 1, 10] #default is 1
     alpha = [ .01, .1, 1, 10] #default is 1
     
-    #rank = [10]
-    #regularization = [1.0]
-    #alpha = [1.0]
-
     #pipeline and crossvalidation
     #pipeline = Pipeline(stages = [indexer_user, indexer_item, als])
     #paramGrid = ParamGridBuilder().addGrid(als.rank, rank).addGrid(als.regParam,
