@@ -12,6 +12,8 @@ from pyspark.ml.recommendation import ALSModel
 from pyspark.ml import PipelineModel
 from pyspark.ml.evaluation import RegressionEvaluator
 from pyspark.mllib.evaluation import RankingMetrics
+from pyspark import SparkContext
+from pyspark import SparkConf
 
 def main(spark, model_file, test_file):
     '''
@@ -28,7 +30,7 @@ def main(spark, model_file, test_file):
     model = PipelineModel.load(model_file)
     
     test_transformed = model.transform(test)
-    predictionAndLabels = test_transformed.select(["prediction", "count"]).rdd.map(lambda row: (float(row.prediction), row.count)).collect()
+    predictionAndLabels = test_transformed.select(["prediction", "count"]).rdd.map(lambda row: (float(row.prediction), row.count))
     
     metrics = RankingMetrics(predictionAndLabels)
     
@@ -43,6 +45,8 @@ if __name__ == "__main__":
 
     # Create the spark session object
     spark = SparkSession.builder.appName('recommender_train').getOrCreate()
+    sconf = SparkConf().setAppName("recommender_train")
+    sc = SparkContext(sconf)
 
     # Get the model from the command line
     model_file = sys.argv[1]
