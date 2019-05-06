@@ -10,7 +10,7 @@ from pyspark.ml import Pipeline
 from pyspark.ml.recommendation import ALS
 
 
-def main(spark, train_data_file, val_data_file, model_file):
+def main(spark, train_data_file, val_data_file):
     '''
     Parameters
     ----------
@@ -77,8 +77,5 @@ if __name__ == "__main__":
     train_data_file = sys.argv[1]
     val_data_file = sys.argv[2]
 
-    # And the location to store the trained model
-    model_file = sys.argv[3]
-
     # Call our main routine
-    main(spark, data_file, model_file)
+    main(spark, train_data_file, val_data_file)
