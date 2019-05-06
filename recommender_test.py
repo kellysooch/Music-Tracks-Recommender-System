@@ -23,23 +23,20 @@ def main(spark, model_file, test_file):
 
     # Load the parquet file
     test = spark.read.parquet(test_file)
-    indexer_user = StringIndexer(inputCol="user_id", outputCol="user", handleInvalid="skip")
-    indexer_item = StringIndexer(inputCol="track_id", outputCol="item", handleInvalid="skip")
     
-    pipeline = Pipeline(stages=[indexer_user, indexer_item])
-    transformed_test = pipeline.fit(test).transform(test)
+    model = PipelineModel.load(model_file)
     
-    model = ALSModel.load(model_file)
+    test_transformed = model.transform(test)
+    predictionAndLabels = test_transformed.select(["prediction", "count"]).rdd.map(lambda row: (float(row.prediction), row.count))
     
-    predictions = model.transform(transformed_test)
-    user_recs = model.recommendForAllUsers(500)
-    user_recs.take(10)
-#     sorted_preds = predictions.sort('prediction', ascending = False)
-#     sorted_preds.createOrReplaceTempView('df')
-#     pred = spark.sql("SELECT user, max(item) as item, max(prediction) as prediction, max(count) as count, COUNT(*) as num FROM df GROUP BY user HAVING num <= 500")
-#     evaluator = RegressionEvaluator(metricName="rmse",labelCol="count",predictionCol="prediction")
-#     rmse = evaluator.evaluate(user_recs)
-#     print("Root-mean-square error = " + str(rmse))
+    metrics = RankingMetrics(predictionAndLabels)
+    
+    precision = metrics.precisionAt(500)
+    ndcg = metrics.ndcgAt(500)
+
+    print('Precision: %f' %precision)
+    print('NDCG: %f' %ndcg)
+
 
 if __name__ == "__main__":
 
