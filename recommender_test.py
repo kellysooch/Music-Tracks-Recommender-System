@@ -30,15 +30,14 @@ def main(spark, model_file, test_file):
     model = PipelineModel.load(model_file)
     
     test_transformed = model.transform(test)
-    predictionAndLabels = test_transformed.select(["prediction", "count"]).rdd.map(lambda row: (row.prediction, row[1])).take(10)
-    print(predictionAndLabels)
+    predictionAndLabels = test_transformed.select(["prediction", "count"]).rdd.map(lambda row: (row.prediction, row[1]))
 #     rdd = sc.parallelize([[1.0], [0.0]])
-#     metrics = RankingMetrics(rdd)
-#     precision = metrics.precisionAt(1)
-#     ndcg = metrics.ndcgAt(500)
+    metrics = RankingMetrics(predictionAndLabels)
+    precision = metrics.precisionAt(500)
+    ndcg = metrics.ndcgAt(500)
 
-#     print('Precision: %f' %precision)
-#     print('NDCG: %f' %ndcg)
+    print('Precision: %f' %precision)
+    print('NDCG: %f' %ndcg)
 
 
 if __name__ == "__main__":
