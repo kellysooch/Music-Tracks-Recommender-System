@@ -33,12 +33,12 @@ def main(spark, model_file, test_file):
     predictionAndLabels = test_transformed.select(["prediction", "count"]).rdd.map(lambda row: (row.prediction, row.count))
     rdd = sc.parallelize([[1.0], [0.0]])
     metrics = RankingMetrics(rdd)
-    
-    precision = metrics.precisionAt(500)
-    ndcg = metrics.ndcgAt(500)
+    model.predict(rdd).collect()
+#     precision = metrics.precisionAt(500)
+#     ndcg = metrics.ndcgAt(500)
 
-    print('Precision: %f' %precision)
-    print('NDCG: %f' %ndcg)
+#     print('Precision: %f' %precision)
+#     print('NDCG: %f' %ndcg)
 
 
 if __name__ == "__main__":
