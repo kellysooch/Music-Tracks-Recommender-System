@@ -31,8 +31,8 @@ def main(spark, model_file, test_file):
     
     test_transformed = model.transform(test)
     predictionAndLabels = test_transformed.select(["prediction", "count"]).rdd.map(lambda row: (row.prediction, row.count))
-    
-    metrics = RankingMetrics(predictionAndLabels)
+    rdd = sc.parallelize([[1.0], [0.0]])
+    metrics = RankingMetrics(rdd)
     
     precision = metrics.precisionAt(500)
     ndcg = metrics.ndcgAt(500)
