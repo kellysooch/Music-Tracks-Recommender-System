@@ -33,8 +33,7 @@ def main(spark, model_file, test_file):
     predictions = test_transformed.select(["user","item","prediction"]).rdd.map(lambda r: ((r.user, r.item), r.prediction))
     ratingsTuple = test_transformed.select(["user","item","count"]).rdd.map(lambda r: ((r.user, r.item), r[2]))
     predictionAndLabels = predictions.join(ratingsTuple).map(lambda tup: tup[1])
-#     predictionAndLabels = test_transformed.select(["prediction", "count"]).rdd.map(lambda row: ([float(row.prediction), row[1]]))
-#     rdd = sc.parallelize([[1.0], [0.0]])
+
     metrics = RankingMetrics(predictionAndLabels)
     precision = metrics.precisionAt(500)
     ndcg = metrics.ndcgAt(500)
@@ -46,7 +45,7 @@ def main(spark, model_file, test_file):
 if __name__ == "__main__":
 
     # Create the spark session object
-    spark = SparkSession.builder.appName('recommender_train').getOrCreate()
+    spark = SparkSession.builder.appName('recommender_test').getOrCreate()
 
     # Get the model from the command line
     model_file = sys.argv[1]
