@@ -32,7 +32,7 @@ def main(spark, model_file, test_file):
     test_transformed = model.transform(test)
     predictions = test_transformed.select(["user","item","prediction"]).rdd.map(lambda r: ((r.user, r.item), r.prediction))
     ratingsTuple = test_transformed.select(["user","item","count"]).rdd.map(lambda r: ((r.user, r.item), r[2]))
-    predictionAndLabels = predictions.join(ratingsTuple).rdd.map(lambda tup: tup[1])
+    predictionAndLabels = predictions.join(ratingsTuple).map(lambda tup: tup[1])
 #     predictionAndLabels = test_transformed.select(["prediction", "count"]).rdd.map(lambda row: ([float(row.prediction), row[1]]))
 #     rdd = sc.parallelize([[1.0], [0.0]])
     metrics = RankingMetrics(predictionAndLabels)
