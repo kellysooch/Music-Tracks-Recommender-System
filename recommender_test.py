@@ -30,7 +30,7 @@ def main(spark, model_file, test_file):
     model = PipelineModel.load(model_file)
     
     test_transformed = model.transform(test)
-    predictionAndLabels = test_transformed.select(["prediction", "count"]).rdd.map(lambda row: (float(row.prediction), row.count))
+    predictionAndLabels = test_transformed.select(["prediction", "count"]).rdd.map(lambda row: (row.prediction, row.count))
     
     metrics = RankingMetrics(predictionAndLabels)
     
