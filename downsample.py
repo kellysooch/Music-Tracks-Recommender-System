@@ -22,7 +22,7 @@ def main(spark, train_data_file, val_data_file, model_file):
     # Load the parquet file
     train = spark.read.parquet(train_data_file)
     val = spark.read.parquet(val_data_file)
-    train1 = train.join(val, ["user_id"], "inner")
+    train1 = train.join(val.select("user_id"), ["user_id"], "inner")
     train = train.sample(withReplacement = False, fraction = 0.1)
     new_data = train1.union(train)
     
