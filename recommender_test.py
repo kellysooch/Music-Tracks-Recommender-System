@@ -11,6 +11,7 @@ from pyspark.ml.recommendation import ALS
 from pyspark.ml.recommendation import ALSModel
 from pyspark.ml import PipelineModel
 from pyspark.ml.evaluation import RegressionEvaluator
+from pyspark.mllib.evaluation import RankingMetrics
 
 def main(spark, model_file, test_file):
     '''
