@@ -10,7 +10,7 @@ from pyspark.ml import Pipeline
 from pyspark.ml.recommendation import ALS
 
 
-def main(spark, train_data_file, val_data_file, model_file):
+def main(spark, train_data_file, val_data_file, test_data_file, model_file):
     '''
     Parameters
     ----------
@@ -22,9 +22,14 @@ def main(spark, train_data_file, val_data_file, model_file):
     # Load the parquet file
     train = spark.read.parquet(train_data_file)
     val = spark.read.parquet(val_data_file)
-    train1 = train.join(val.select("user_id"), ["user_id"], "inner")
-    train = train.sample(withReplacement = False, fraction = 0.1)
-    new_data = train1.union(train)
+    test = spark.read.parquet(test_data_file)
+    train1 = val.select("user_id").drop_duplicates()
+    train2 = test.select("user_id").drop_duplicates()
+    train2 = train1.union(train2)
+    train_use = train.join(train2.select("user_id"), ["user_id"], "inner")
+    train = train.join(train2.select("user_id"), ["user_id"], "leftanti")
+    train = train.sample(withReplacement = False, fraction = 0.05)
+    new_data = train.union(train_use)
     
     new_data.write.parquet(new_data_file)
     
@@ -38,9 +43,10 @@ if __name__ == "__main__":
     # Get the filename from the command line
     train_data_file = sys.argv[1]
     val_data_file = sys.argv[2]
+    test_data_file = sys.argv[3]
 
     # And the location to store the trained model
-    new_data_file = sys.argv[3]
+    new_data_file = sys.argv[4]
 
     # Call our main routine
-    main(spark, train_data_file, val_data_file, new_data_file)
+    main(spark, train_data_file, val_data_file, test_data_file, new_data_file)
