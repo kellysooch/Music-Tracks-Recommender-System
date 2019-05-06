@@ -44,7 +44,9 @@ def main(spark, model_file, test_file):
 if __name__ == "__main__":
 
     # Create the spark session object
-    spark = SparkSession.builder.appName('recommender_train').getOrCreate()
+#     spark = SparkSession.builder.appName('recommender_train').getOrCreate()
+    sconf = SparkConf().setAppName("recommender_train").getOrCreate()
+    sc = SparkContext(sconf)
 
     # Get the model from the command line
     model_file = sys.argv[1]
