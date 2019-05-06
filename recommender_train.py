@@ -8,6 +8,9 @@ from pyspark.ml.feature import StringIndexer
 from pyspark.sql import SparkSession
 from pyspark.ml import Pipeline
 from pyspark.ml.recommendation import ALS
+from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
+from pyspark.ml.evaluation import RegressionEvaluator
+import numpy as np
 
 
 def main(spark, train_data_file, val_data_file):
