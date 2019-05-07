@@ -26,17 +26,26 @@ def main(spark, model_file, test_file):
 
     # Load the parquet file
     test = spark.read.parquet(test_file)
+    print("read file")
     
     model = PipelineModel.load(model_file)
+    print("loaded model")
     
     test_transformed = model.transform(test)
+    print("transformed test file")
     predictions = test_transformed.select(["user","item","prediction"]).rdd.map(lambda r: ((r.user, r.item), r.prediction))
+    print("made predictions tuple")
     ratingsTuple = test_transformed.select(["user","item","count"]).rdd.map(lambda r: ((r.user, r.item), r[2]))
+    print("made count tuple")
     predictionAndLabels = predictions.join(ratingsTuple).map(lambda tup: tup[1])
+    print("joined predictions and counts")
 
     metrics = RankingMetrics(predictionAndLabels)
+    print("made metrics")
     precision = metrics.precisionAt(500)
+    print("made precision")
     ndcg = metrics.ndcgAt(500)
+    print("made ndcg")
 
     print('Precision: %f' %precision)
     print('NDCG: %f' %ndcg)
