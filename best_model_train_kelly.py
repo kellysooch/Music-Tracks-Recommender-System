@@ -35,7 +35,7 @@ def main(spark, train_data_file, rank_val, reg, alpha_val, user_indexer_model, i
     
     pipeline = Pipeline(stages = [indexer_user, indexer_item, als])
     train = indexer_user.transform(train)
-    train = inexer_item.transform(train)
+    train = indexer_item.transform(train)
     model = als.fit(train)
     indexer_user.save(user_indexer_model)
     indexer_item.save(item_indexer_model)
