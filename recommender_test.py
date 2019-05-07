@@ -65,10 +65,12 @@ if __name__ == "__main__":
     spark = SparkSession.builder.appName('recommender_test').getOrCreate()
 
     # Get the model from the command line
-    model_file = sys.argv[1]
+    user_indexer_model = sys.argv[1]
+    item_indexer_model = sys.argv[2]
+    model_file = sys.argv[3]
 
     # And the test file
-    test_file = sys.argv[2]
+    test_file = sys.argv[4]
 
     # Call our main routine
-    main(spark, model_file, test_file)
+    main(spark, user_indexer_model, item_indexer_model, model_file, test_file)
