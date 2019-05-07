@@ -14,6 +14,7 @@ from pyspark.ml.evaluation import RegressionEvaluator
 from pyspark.mllib.evaluation import RankingMetrics
 from pyspark import SparkContext
 from pyspark import SparkConf
+from pyspark.sql.functions import col
 
 def main(spark, model_file, test_file):
     '''
@@ -35,8 +36,10 @@ def main(spark, model_file, test_file):
     print("transformed test file")
     predictions = test_transformed.select(["user","item","prediction"]).rdd.map(lambda r: ((r.user, r.item), r.prediction))
     print("made predictions tuple")
-    ratingsTuple = test_transformed.select(["user","item","count"]).rdd.map(lambda r: ((r.user, r.item), r[2]))
-    print("made count tuple")
+    test_select = test_transformed.select(col("user"), col("item"), col("count").alias("prediction"))
+    print("renamed cols")
+    ratingsTuple = test_select.select(["user","item","prediction"]).rdd.map(lambda r: ((r.user, r.item), r[2]))
+    print("made label tuple")
     predictionAndLabels = predictions.join(ratingsTuple).map(lambda tup: tup[1])
     print("joined predictions and counts")
 
