@@ -43,7 +43,7 @@ def main(spark, train_data_file, val_data_file, model_file):
     regularization = [ .01, .1, 1, 10] #default is 1
     alpha = [ .01, .1, 1, 10] #default is 1
     
-    #pipeline and crossvalidation
+    #pipeline and crossvalidation 
     #pipeline = Pipeline(stages = [indexer_user, indexer_item, als])
     #paramGrid = ParamGridBuilder().addGrid(als.rank, rank).addGrid(als.regParam,
     #regularization).addGrid(als.alpha, alpha).build()
