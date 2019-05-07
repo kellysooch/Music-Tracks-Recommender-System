@@ -28,6 +28,7 @@ def main(spark, model_file, test_file):
     # Load the parquet file
     test = spark.read.parquet(test_file)
     print("read file")
+    test = test.sample(withReplacement = False, fraction = 0.1)
     
     model = PipelineModel.load(model_file)
     print("loaded model")
@@ -37,7 +38,7 @@ def main(spark, model_file, test_file):
     predictions = test_transformed.select(["user","item","prediction"]).rdd.map(lambda r: ((r.user, r.item), r.prediction))
     print("made predictions tuple")
     test_select = test_transformed.select(col("user"), col("item"), col("count").alias("prediction"))
-    print("renamed cols")
+    print(test_select.take(10))
     ratingsTuple = test_select.select(["user","item","prediction"]).rdd.map(lambda r: ((r.user, r.item), r[2]))
     print("made label tuple")
     predictionAndLabels = predictions.join(ratingsTuple).map(lambda tup: tup[1])
