@@ -24,7 +24,7 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     # Load the parquet file
     test = spark.read.parquet(test_file)
     print("read file")
-    test = test.sample(withReplacement = False, fraction = 0.00006)
+    test = test.sample(withReplacement = False, fraction = 0.00001)
     print("sample file")
 #     user_index = StringIndexerModel.load(user_indexer_model)
 #     item_index = StringIndexerModel.load(item_indexer_model)
@@ -51,15 +51,15 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     print(predictionAndLabels.take(10))
     print("joined predictions and counts")
 
-    metrics = RankingMetrics(predictionAndLabels)
-    print("made metrics")
-    precision = metrics.precisionAt(500)
-    print("made precision")
-    ndcg = metrics.ndcgAt(500)
-    print("made ndcg")
+#     metrics = RankingMetrics(predictionAndLabels)
+#     print("made metrics")
+#     precision = metrics.precisionAt(500)
+#     print("made precision")
+#     ndcg = metrics.ndcgAt(500)
+#     print("made ndcg")
 
-    print('Precision: %f' %precision)
-    print('NDCG: %f' %ndcg)
+#     print('Precision: %f' %precision)
+#     print('NDCG: %f' %ndcg)
 
 
 if __name__ == "__main__":
