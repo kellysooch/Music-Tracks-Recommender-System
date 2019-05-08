@@ -26,6 +26,8 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     # Load the parquet file
     test = spark.read.parquet(test_file)
     print("read file")
+    test = test.sort('user')
+    print("sort test")
 #     print("sample file")
 #     user_index = StringIndexerModel.load(user_indexer_model)
 #     item_index = StringIndexerModel.load(item_indexer_model)
@@ -37,17 +39,18 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     
     user_subset = test.select("user").distinct()
     print("select users")
-    user_recs = model.recommendForUserSubset(user_subset, 500)
+    user_subset = model.recommendForUserSubset(user_subset, 500)
     
-    top5 = user_recs.select("user", col("recommendations.item").alias("item"))
-    print("select rdd")
-    
+    user_subset = user_subset.select("user", col("recommendations.item").alias("item"))
+    print("select recs")
+    user_subset = user_subset.sort('user')
 #     relevant_docs = test.groupBy('user').agg(F.collect_list('item').alias('item')).select("user", "item")
-    relevant_docs = test.select("user","item")
-    print("made label tuple")
-    predictionAndLabels = top5.join(relevant_docs,["user"], "inner").rdd.map(lambda tup: (tup[1], tup[2]))
-    predictionAndLabels = predictionAndLabels.repartition(1000)
-    print(predictionAndLabels.take(10))    
+#     relevant_docs = test.select("user","item")
+    print("sort user")
+    user_subset = user_subset.repartition(1000)
+    predictionAndLabels = user_subset.join(test,["user"], "inner").rdd.map(lambda tup: (tup[1], tup[2]))
+#     predictionAndLabels = predictionAndLabels.repartition(1000)
+#     print(predictionAndLabels.take(10))
     print("joined predictions and counts")
 
     metrics = RankingMetrics(predictionAndLabels)
