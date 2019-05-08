@@ -26,8 +26,8 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     # Load the parquet file
     test = spark.read.parquet(test_file)
     print("read file")
-#     test = test.sample(withReplacement = False, fraction = 0.001)
-#     print("sample file")
+    test = test.sample(withReplacement = False, fraction = 0.01)
+    print("sample file")
     user_index = StringIndexerModel.load(user_indexer_model)
     item_index = StringIndexerModel.load(item_indexer_model)
     test = user_index.transform(test)
@@ -51,7 +51,7 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
 #     predictionAndLabels = predictions.join(ratingsTuple).map(lambda tup: tup[1])
     predictionAndLabels = top5.join(relevant_docs).map(lambda tup: tup[1])
 #     print(predictionAndLabels.take(10))
-    predictionAndLabels = predictionAndLabels.repartition(2000)
+#     predictionAndLabels = predictionAndLabels.repartition(2000)
     print("joined predictions and counts")
 
     metrics = RankingMetrics(predictionAndLabels)
