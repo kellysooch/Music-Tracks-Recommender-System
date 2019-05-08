@@ -12,6 +12,7 @@ from pyspark.ml import PipelineModel
 from pyspark.mllib.evaluation import RankingMetrics
 from pyspark.ml.feature import StringIndexerModel
 from pyspark.sql.functions import col
+import pyspark.sql.functions as F
 
 def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     '''
