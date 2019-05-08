@@ -25,7 +25,7 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     # Load the parquet file
     test = spark.read.parquet(test_file)
     print("read file")
-#     test = test.sample(withReplacement = False, fraction = 0.001)
+    test = test.sample(withReplacement = False, fraction = 0.001)
     print("sample file")
     user_index = StringIndexerModel.load(user_indexer_model)
     item_index = StringIndexerModel.load(item_indexer_model)
@@ -45,11 +45,6 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     top5 = user_recs.select("user", col("recommendations.item").alias("item")).rdd.map(lambda r: (r.user, r.item))
     top5 = top5.repartition(2000)
     print("select rdd")
-#     predictions = top_predictions.select(col("user"), col("recommendations.item").alias("item")).rdd.map(lambda r: (r.user, [r.item]))
-#     top_predictions.createOrReplaceTempView('mytable')
-#     results = spark.sql('SELECT * from mytable LIMIT 5')
-#     print("top 5")
-#     print(results.show())
     
     print("made predictions tuple")
     relevant_docs = test.select(["user","item"]).rdd.map(lambda r: (r.user, [r.item])).reduceByKey(lambda p, q: p+q)
