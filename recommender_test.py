@@ -32,21 +32,19 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     test = user_index.transform(test)
     test = item_index.transform(test)
     print("transform file")
-#     model = ALSModel.load(model_file)
+    model = ALSModel.load(model_file)
     print("loaded model")
-    als = ALS(userCol = 'user', itemCol = 'item', implicitPrefs = True,
-    ratingCol = 'count', rank = 10, regParam = 1.0, alpha = 1.0)
-    model = als.fit(test)
     
 #     test_transformed = model.transform(test)
     print("transformed test file")
 #     print(test_transformed.take(10))
     user_subset = test.select("user").distinct()
+    print("select users")
     user_recs = model.recommendForUserSubset(user_subset, 5)
     
     top5 = user_recs.select("user", "recommendations.item").rdd
     top5 = top5.repartition(2000)
-    print("select")
+    print("select rdd")
     print(top5.take(10))
 #     predictions = top_predictions.select(col("user"), col("recommendations.item").alias("item")).rdd.map(lambda r: (r.user, [r.item]))
 #     top_predictions.createOrReplaceTempView('mytable')
