@@ -50,7 +50,7 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
 #     test.createOrReplaceTempView("mytable") 
 #     test_group = spark.sql("SELECT user, COUNT(*) as counting FROM mytable GROUP BY user ORDER BY counting LIMIT 50")
 #     test_group.show()
-    relevant_docs = test.filter(user == 207714).select(["user","item"]).rdd.map(lambda r: (r.user, [r.item])).reduceByKey(lambda p, q: p+q)
+    relevant_docs = test.filter(test.user == 207714).select(["user","item"]).rdd.map(lambda r: (r.user, [r.item])).reduceByKey(lambda p, q: p+q)
     relevant_docs.show()
 #     test_select = test_transformed.select(col("user"), col("item"), col("count").alias("prediction"))
 #     ratingsTuple = test_select.rdd.map(lambda r: (r.user, [r.prediction])).reduceByKey(lambda p, q: p+q)
