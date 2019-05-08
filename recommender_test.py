@@ -26,6 +26,7 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     # Load the parquet file
     test = spark.read.parquet(test_file)
     print("read file")
+    test = test.sample(withReplacement = False, fraction = 0.1)
     test = test.sort('user')
     print("sort test")
 #     print("sample file")
