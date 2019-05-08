@@ -37,8 +37,9 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
 #     test_transformed = model.transform(test)
     print("transformed test file")
 #     print(test_transformed.take(10))
-#     top_predictions = model.recommendForAllUsers(5)
-#     predictions = top_predictions.select(col("user"), col("recommendations.item").alias("item")).rdd
+    top_predictions = model.recommendForAllUsers(5)
+    predictions = top_predictions.select(col("user"), col("recommendations.item").alias("item"))
+    print(predictions.head(5))
 #     predictions = test_transformed.rdd.map(lambda r: (r.user, [float(r.prediction)])).reduceByKey(lambda p, q: p+q)
     
     print("made predictions tuple")
