@@ -35,7 +35,7 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
 #     model = ALSModel.load(model_file)
     print("loaded model")
     als = ALS(userCol = 'user', itemCol = 'item', implicitPrefs = True,
-    ratingCol = 'count', rank = rank_val, regParam = reg, alpha = alpha_val)
+    ratingCol = 'count', rank = 10, regParam = 1.0, alpha = 1.0)
     model = als.fit(test)
     
 #     test_transformed = model.transform(test)
