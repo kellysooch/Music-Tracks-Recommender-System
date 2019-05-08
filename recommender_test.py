@@ -38,7 +38,7 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     print("transformed test file")
 #     print(test_transformed.take(10))
     user_recs = model.recommendForAllUsers(5)
-    print(user_recs)
+    print(user_recs.head(5))
     top5 = user_recs.where(user_recs.user == 17918.0).select("recommendations.item", "recommendations.rating").collect()
     print("collect")
     print(top5)
