@@ -49,7 +49,7 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
 #     ratingsTuple = test_select.rdd.map(lambda r: (r.user, [r.prediction])).reduceByKey(lambda p, q: p+q)
     print("made label tuple")
 #     predictionAndLabels = predictions.join(ratingsTuple).map(lambda tup: tup[1])
-    predictionAndLabels = top5.join(relevant_docs,["user"], "inner").rdd.map(lambda tup: tup[1])
+    predictionAndLabels = top5.join(relevant_docs,["user"], "inner").rdd.map(lambda tup: (tup[1], tup[2]))
     print(predictionAndLabels.take(10))
 #     predictionAndLabels = predictionAndLabels.repartition(2000)
     print("joined predictions and counts")
