@@ -30,7 +30,7 @@ def main(spark, user_indexer_model, item_indexer_model, test_file, save_test):
     
     
 #     relevant_docs = test.select(["user","item"]).rdd.map(lambda r: (r.user, [r.item])).reduceByKey(lambda p, q: p+q)
-    relevant_docs = test.groupBy('user').agg(F.collect_list('item'))
+    relevant_docs = test.groupBy('user').agg(F.collect_list('item').alias('item'))
     relevant_docs = relevant_docs.repartition(1000)
 #     relevant_docs = relevant_docs.toDF()
     relevant_docs.write.parquet(save_test)
