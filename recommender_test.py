@@ -48,7 +48,7 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     
     print("made predictions tuple")
     test.createOrReplaceTempView("mytable") 
-    test_group = spark.sql("SELECT user, COUNT(*) FROM mytable GROUP BY user ORDER BY count LIMIT 50")
+    test_group = spark.sql("SELECT user, COUNT(*) as counting FROM mytable GROUP BY user ORDER BY counting LIMIT 50")
     test_group.show()
 #     relevant_docs = test.select(["user","item"]).rdd.map(lambda r: (r.user, [r.item])).reduceByKey(lambda p, q: p+q)
 #     test_select = test_transformed.select(col("user"), col("item"), col("count").alias("prediction"))
