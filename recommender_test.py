@@ -43,17 +43,21 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     user_recs = model.recommendForUserSubset(user_subset, 500)
     
     top5 = user_recs.select("user", col("recommendations.item").alias("item")).rdd.map(lambda r: (r.user, r.item))
-    top5 = top5.repartition(2000)
+#     top5 = top5.repartition(2000)
     print("select rdd")
     
     print("made predictions tuple")
-    relevant_docs = test.select(["user","item"]).rdd.map(lambda r: (r.user, [r.item])).reduceByKey(lambda p, q: p+q)
+    test.createOrReplaceTempView("mytable") 
+    test_group = spark.sql("SELECT user, COUNT(*) FROM mytable GROUP BY user LIMIT 50")
+    test_group.show()
+#     relevant_docs = test.select(["user","item"]).rdd.map(lambda r: (r.user, [r.item])).reduceByKey(lambda p, q: p+q)
 #     test_select = test_transformed.select(col("user"), col("item"), col("count").alias("prediction"))
 #     ratingsTuple = test_select.rdd.map(lambda r: (r.user, [r.prediction])).reduceByKey(lambda p, q: p+q)
     print("made label tuple")
 #     predictionAndLabels = predictions.join(ratingsTuple).map(lambda tup: tup[1])
     predictionAndLabels = top5.join(relevant_docs).map(lambda tup: tup[1])
 #     print(predictionAndLabels.take(10))
+    predictionAndLabels = predictionAndLabels.repartition(8000)
     print("joined predictions and counts")
 
     metrics = RankingMetrics(predictionAndLabels)
