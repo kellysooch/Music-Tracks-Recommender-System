@@ -24,7 +24,7 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     # Load the parquet file
     test = spark.read.parquet(test_file)
     print("read file")
-    test = test.sample(withReplacement = False, fraction = 0.1)
+    test = test.sample(withReplacement = False, fraction = 0.001)
     print("sample file")
     user_index = StringIndexerModel.load(user_indexer_model)
     item_index = StringIndexerModel.load(item_indexer_model)
@@ -37,10 +37,8 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
 #     test_transformed = model.transform(test)
     print("transformed test file")
 #     print(test_transformed.take(10))
-#     testData = test.rdd.map(lambda p: (p.user, p.item))
-#     predictions = model.predictAll(testData).rdd.map(lambda r: ((r.user, r.item), r.rating))
-    top_predictions = model.recommendForAllUsers(500)
-    predictions = top_predictions.select(col("user"), col("recommendations.item").alias("item")).rdd
+#     top_predictions = model.recommendForAllUsers(5)
+#     predictions = top_predictions.select(col("user"), col("recommendations.item").alias("item")).rdd
 #     predictions = test_transformed.rdd.map(lambda r: (r.user, [float(r.prediction)])).reduceByKey(lambda p, q: p+q)
     
     print("made predictions tuple")
@@ -50,19 +48,19 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
 #     ratingsTuple = test_select.rdd.map(lambda r: (r.user, [r.prediction])).reduceByKey(lambda p, q: p+q)
 #     print("made label tuple")
 #     predictionAndLabels = predictions.join(ratingsTuple).map(lambda tup: tup[1])
-    predictionAndLabels = predictions.join(relevant_docs).map(lambda tup: tup[1])
+#     predictionAndLabels = predictions.join(relevant_docs).map(lambda tup: tup[1])
 #     print(predictionAndLabels.take(10))
 #     print("joined predictions and counts")
 
-    metrics = RankingMetrics(predictionAndLabels)
-    print("made metrics")
-    precision = metrics.precisionAt(500)
-    print("made precision")
-    ndcg = metrics.ndcgAt(500)
-    print("made ndcg")
+#     metrics = RankingMetrics(predictionAndLabels)
+#     print("made metrics")
+#     precision = metrics.precisionAt(500)
+#     print("made precision")
+#     ndcg = metrics.ndcgAt(500)
+#     print("made ndcg")
 
-    print('Precision: %f' %precision)
-    print('NDCG: %f' %ndcg)
+#     print('Precision: %f' %precision)
+#     print('NDCG: %f' %ndcg)
 
 
 if __name__ == "__main__":
