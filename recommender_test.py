@@ -6,6 +6,7 @@ import sys
 
 from pyspark.ml.feature import StringIndexer
 from pyspark.sql import SparkSession
+from pyspark.ml.recommendation import ALS
 from pyspark.ml.recommendation import ALSModel
 from pyspark.ml import PipelineModel
 from pyspark.mllib.evaluation import RankingMetrics
@@ -31,8 +32,11 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     test = user_index.transform(test)
     test = item_index.transform(test)
     print("transform file")
-    model = ALSModel.load(model_file)
+#     model = ALSModel.load(model_file)
     print("loaded model")
+    als = ALS(userCol = 'user', itemCol = 'item', implicitPrefs = True,
+    ratingCol = 'count', rank = rank_val, regParam = reg, alpha = alpha_val)
+    model = als.fit(test)
     
 #     test_transformed = model.transform(test)
     print("transformed test file")
