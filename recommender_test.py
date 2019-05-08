@@ -38,9 +38,11 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     print("transformed test file")
 #     print(test_transformed.take(10))
     top_predictions = model.recommendForAllUsers(5)
+    print("recommend")
 #     predictions = top_predictions.select(col("user"), col("recommendations.item").alias("item"))
     top_predictions.createOrReplaceTempView('mytable')
     results = spark.sql('SELECT * from mytable LIMIT 5')
+    print("top 5")
     print(results.show())
 #     predictions = test_transformed.rdd.map(lambda r: (r.user, [float(r.prediction)])).reduceByKey(lambda p, q: p+q)
     
