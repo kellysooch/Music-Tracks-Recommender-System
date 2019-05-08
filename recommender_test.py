@@ -40,12 +40,11 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
 #     print(test_transformed.take(10))
     user_subset = test.select("user").distinct()
     print("select users")
-    user_recs = model.recommendForUserSubset(user_subset, 5)
+    user_recs = model.recommendForUserSubset(user_subset, 500)
     
-    top5 = user_recs.select("user", "recommendations.item").rdd
+    top5 = user_recs.select("user", col("recommendations.item").alias("item")).rdd.map(lambda r: (r.user, r.item))
     top5 = top5.repartition(2000)
     print("select rdd")
-    print(top5.take(10))
 #     predictions = top_predictions.select(col("user"), col("recommendations.item").alias("item")).rdd.map(lambda r: (r.user, [r.item]))
 #     top_predictions.createOrReplaceTempView('mytable')
 #     results = spark.sql('SELECT * from mytable LIMIT 5')
@@ -54,24 +53,23 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     
     print("made predictions tuple")
     relevant_docs = test.select(["user","item"]).rdd.map(lambda r: (r.user, [r.item])).reduceByKey(lambda p, q: p+q)
-    print(relevant_docs.take(10))
 #     test_select = test_transformed.select(col("user"), col("item"), col("count").alias("prediction"))
 #     ratingsTuple = test_select.rdd.map(lambda r: (r.user, [r.prediction])).reduceByKey(lambda p, q: p+q)
-#     print("made label tuple")
+    print("made label tuple")
 #     predictionAndLabels = predictions.join(ratingsTuple).map(lambda tup: tup[1])
-#     predictionAndLabels = predictions.join(relevant_docs).map(lambda tup: tup[1])
+    predictionAndLabels = top5.join(relevant_docs).map(lambda tup: tup[1])
 #     print(predictionAndLabels.take(10))
-#     print("joined predictions and counts")
+    print("joined predictions and counts")
 
-#     metrics = RankingMetrics(predictionAndLabels)
-#     print("made metrics")
-#     precision = metrics.precisionAt(500)
+    metrics = RankingMetrics(predictionAndLabels)
+    print("made metrics")
+    precision = metrics.precisionAt(500)
 #     print("made precision")
-#     ndcg = metrics.ndcgAt(500)
+    ndcg = metrics.ndcgAt(500)
 #     print("made ndcg")
 
-#     print('Precision: %f' %precision)
-#     print('NDCG: %f' %ndcg)
+    print('Precision: %f' %precision)
+    print('NDCG: %f' %ndcg)
 
 
 if __name__ == "__main__":
