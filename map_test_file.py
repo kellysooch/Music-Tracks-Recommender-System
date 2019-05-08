@@ -29,12 +29,13 @@ def main(spark, user_indexer_model, item_indexer_model, test_file, save_test):
     
     relevant_docs = test.select(["user","item"]).rdd.map(lambda r: (r.user, [r.item])).reduceByKey(lambda p, q: p+q)
     relevant_docs = relevant_docs.repartition(1000)
+    relevant_docs = relevant_docs.toDF()
     relevant_docs.write.parquet(save_test)
 
 if __name__ == "__main__":
 
     # Create the spark session object
-    spark = SparkSession.builder.appName('recommender_test').getOrCreate()
+    spark = SparkSession.builder.appName('map_test_file').getOrCreate()
 
     # Get the model from the command line
     user_indexer_model = sys.argv[1]
