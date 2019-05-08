@@ -44,7 +44,7 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
 #     top5 = top5.repartition(2000)
     print("select rdd")
     
-    relevant_docs = test.groupBy('user').agg(F.collect_list('item').alias('item'))
+    relevant_docs = test.groupBy('user').agg(F.collect_list('item').alias('item')).select("user", "item")
 #     test_select = test_transformed.select(col("user"), col("item"), col("count").alias("prediction"))
 #     ratingsTuple = test_select.rdd.map(lambda r: (r.user, [r.prediction])).reduceByKey(lambda p, q: p+q)
     print("made label tuple")
