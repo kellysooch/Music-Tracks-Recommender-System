@@ -26,7 +26,7 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     # Load the parquet file
     test = spark.read.parquet(test_file)
     print("read file")
-    test = test.sort('user')
+    test = test.sort('user', ascending=False)
     print("sort test")
     test.createOrReplaceTempView('test_table')
     test = spark.sql('SELECT * FROM test_table LIMIT 50000')
@@ -42,7 +42,7 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     
     user_subset = user_subset.select("user", col("recommendations.item").alias("item"))
     print("select recs")
-    user_subset = user_subset.sort('user')
+    user_subset = user_subset.sort('user', ascending=False)
 #     relevant_docs = test.groupBy('user').agg(F.collect_list('item').alias('item')).select("user", "item")
     print("sort user")
 #     user_subset = user_subset.repartition(500)
