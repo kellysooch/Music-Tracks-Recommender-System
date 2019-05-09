@@ -33,6 +33,7 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     print("loaded model")
     
     user_subset = test.select("user").distinct()
+    user_subset = user_subset.sample(withReplacement = False, fraction = 0.5)
     print("select users")
     user_subset = model.recommendForUserSubset(user_subset, 500)
     
@@ -41,8 +42,8 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     user_subset = user_subset.sort('user')
 #     relevant_docs = test.groupBy('user').agg(F.collect_list('item').alias('item')).select("user", "item")
     print("sort user")
-    user_subset = user_subset.repartition(500)
-    test = test.repartition(500)
+#     user_subset = user_subset.repartition(500)
+#     test = test.repartition(500)
     predictionAndLabels = user_subset.join(test,["user"], "inner").rdd.map(lambda tup: (tup[1], tup[2]))
     print("joined predictions and counts")
 
