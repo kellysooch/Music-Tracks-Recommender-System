@@ -14,7 +14,7 @@ from pyspark.ml.feature import StringIndexerModel
 from pyspark.sql.functions import col
 import pyspark.sql.functions as F
 
-def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
+def main(spark, model_file, test_file):
     '''
     Parameters
     ----------
@@ -36,14 +36,12 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     print("loaded model")
     
     user_subset = test.select("user").distinct()
-#     user_subset = user_subset.sample(withReplacement = False, fraction = 0.5)
     print("select users")
     user_subset = model.recommendForUserSubset(user_subset, 500)
     
     user_subset = user_subset.select("user", col("recommendations.item").alias("item"))
     print("select recs")
     user_subset = user_subset.sort('user', ascending=False)
-#     relevant_docs = test.groupBy('user').agg(F.collect_list('item').alias('item')).select("user", "item")
     print("sort user")
 #     user_subset = user_subset.repartition(500)
 #     test = test.repartition(500)
@@ -52,9 +50,11 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
 
     metrics = RankingMetrics(predictionAndLabels)
     print("made metrics")
+    MAP = metrics.meanAveragePrecision
     precision = metrics.precisionAt(500)
     ndcg = metrics.ndcgAt(500)
-
+    
+    print('MAP: %f' %MAP)
     print('Precision: %f' %precision)
     print('NDCG: %f' %ndcg)
 
@@ -65,12 +65,10 @@ if __name__ == "__main__":
     spark = SparkSession.builder.appName('recommender_test').getOrCreate()
 
     # Get the model from the command line
-    user_indexer_model = sys.argv[1]
-    item_indexer_model = sys.argv[2]
     model_file = sys.argv[3]
 
     # And the test file
     test_file = sys.argv[4]
 
     # Call our main routine
-    main(spark, user_indexer_model, item_indexer_model, model_file, test_file)
+    main(spark, model_file, test_file)

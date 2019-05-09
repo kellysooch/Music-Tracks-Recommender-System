@@ -22,17 +22,13 @@ def main(spark, user_indexer_model, item_indexer_model, test_file, save_test):
 
     # Load the parquet file
     test = spark.read.parquet(test_file)
-    print("read file")
     user_index = StringIndexerModel.load(user_indexer_model)
     item_index = StringIndexerModel.load(item_indexer_model)
     test = user_index.transform(test)
     test = item_index.transform(test)
+    test = test.sort('count', ascending = False)
     
     relevant_docs = test.groupBy('user').agg(F.collect_list('item').alias('item'))
-    print("groupby")
-#     relevant_docs = relevant_docs.repartition(1000)
-    print("repartition")
-#     relevant_docs = relevant_docs.toDF()
     relevant_docs.write.parquet(save_test)
 
 if __name__ == "__main__":
