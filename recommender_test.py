@@ -26,9 +26,12 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     # Load the parquet file
     test = spark.read.parquet(test_file)
     print("read file")
-    test = test.sample(withReplacement = False, fraction = 0.4)
     test = test.sort('user')
     print("sort test")
+    test.createOrReplaceTempView('test_table')
+    test = spark.sql('SELECT * FROM test_table LIMIT 50000')
+#     test = test.sample(withReplacement = False, fraction = 0.4)    
+    print("sql test")
     model = ALSModel.load(model_file)
     print("loaded model")
     
