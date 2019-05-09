@@ -41,8 +41,8 @@ def main(spark, user_indexer_model, item_indexer_model, model_file, test_file):
     user_subset = user_subset.sort('user')
 #     relevant_docs = test.groupBy('user').agg(F.collect_list('item').alias('item')).select("user", "item")
     print("sort user")
-#     user_subset = user_subset.repartition(100)
-#     test = test.partition(100)
+    user_subset = user_subset.repartition(100)
+    test = test.partition(100)
     predictionAndLabels = user_subset.join(test,["user"], "inner").rdd.map(lambda tup: (tup[1], tup[2]))
     print("joined predictions and counts")
 
