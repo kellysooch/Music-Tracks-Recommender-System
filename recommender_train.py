@@ -51,7 +51,7 @@ def main(spark, indexer_user, indexer_item, train_data_file, val_data_file):
                           ratingCol = 'count', rank = i, regParam = j, alpha = k)
                 model = als.fit(train)
                 subset = val.select('user').distinct()
-                predictions = model.recommendForUserSubset(subset, 100)
+                predictions = model.recommendForUserSubset(subset, 50)
                 predictions = predictions.select("user", col("recommendations.item").alias("item")).sort('user')
                 val = val.sort('user')
                 predictionAndLabels = predictions.join(val,["user"], "inner").rdd.map(lambda tup: (tup[1], tup[2]))
