@@ -31,17 +31,12 @@ def main(spark, indexer_user, indexer_item, train_data_file, val_data_file):
     user_index = StringIndexerModel.load(indexer_user)
     item_index = StringIndexerModel.load(indexer_item)
     
-    train = user_index.fit(train)
-    train = item_index.fit(train)
+    train = user_index.transform(train)
+    train = item_index.transform(train)
     
     rank = [10, 20, 30] #default is 10
     regularization = [ .01, .1, 1] #default is 1
     alpha = [ .1, .5, 1] #default is 1
-    
-    train = indexer_user.transform(train)
-    train = indexer_item.transform(train)
-#     val = indexer_user.transform(val)
-#     val = indexer_item.transform(val)
     
     rank_list = []
     reg_list = []
