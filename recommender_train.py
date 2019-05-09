@@ -12,6 +12,7 @@ from pyspark.mllib.evaluation import RankingMetrics
 from pyspark.ml.feature import StringIndexerModel
 from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
 from pyspark.ml.evaluation import RegressionEvaluator
+from pyspark.sql.functions import col
 import numpy as np
 
 
