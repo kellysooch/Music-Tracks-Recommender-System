@@ -8,12 +8,14 @@ from pyspark.ml.feature import StringIndexer
 from pyspark.sql import SparkSession
 from pyspark.ml import Pipeline
 from pyspark.ml.recommendation import ALS
+from pyspark.mllib.evaluation import RankingMetrics
+from pyspark.ml.feature import StringIndexerModel
 from pyspark.ml.tuning import CrossValidator, ParamGridBuilder
 from pyspark.ml.evaluation import RegressionEvaluator
 import numpy as np
 
 
-def main(spark, train_data_file, val_data_file):
+def main(spark, indexer_user, indexer_item, train_data_file, val_data_file):
     '''
     Parameters
     ----------
@@ -26,10 +28,11 @@ def main(spark, train_data_file, val_data_file):
     train = spark.read.parquet(train_data_file)
     val = spark.read.parquet(val_data_file)
     
-    indexer_user = StringIndexer(inputCol="user_id", outputCol="user",
-    handleInvalid="keep").fit(train)
-    indexer_item = StringIndexer(inputCol="track_id", outputCol="item",
-    handleInvalid="keep").fit(train)
+    user_index = StringIndexerModel.load(indexer_user)
+    item_index = StringIndexerModel.load(indexer_item)
+    
+    train = user_index.fit(train)
+    train = item_index.fit(train)
     
     rank = [10, 20, 30] #default is 10
     regularization = [ .01, .1, 1] #default is 1
@@ -81,8 +84,11 @@ if __name__ == "__main__":
     spark = SparkSession.builder.appName('recommender_train').getOrCreate()
 
     # Get the filename from the command line
-    train_data_file = sys.argv[1]
-    val_data_file = sys.argv[2]
+    indexer_user = sys.argv[1]
+    indexer_item = sys.argv[2]
+    
+    train_data_file = sys.argv[3]
+    val_data_file = sys.argv[4]
 
     # Call our main routine
-    main(spark, train_data_file, val_data_file)
+    main(spark, indexer_user, indexer_item, train_data_file, val_data_file)
