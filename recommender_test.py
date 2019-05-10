@@ -40,10 +40,10 @@ def main(spark, model_file, test_file):
 #     print(user_subset.take(10))
     print("sort user")
     predictionAndLabels = user_subset.join(test,["user"], "inner").rdd.map(lambda tup: (tup[1], tup[2]))
-    print(predictionAndLabels.take(10))
+#     print(predictionAndLabels.take(10))
     print("joined predictions and counts")
 
-#     metrics = RankingMetrics(predictionAndLabels)
+    metrics = RankingMetrics(predictionAndLabels)
     print("made metrics")
     MAP = metrics.meanAveragePrecision
     precision = metrics.precisionAt(500)
