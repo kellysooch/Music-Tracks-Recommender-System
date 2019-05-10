@@ -25,26 +25,18 @@ def main(spark, model_file, test_file):
 
     # Load the parquet file
     test = spark.read.parquet(test_file)
-    print("read file")
     test = test.sort('user', ascending=False)
-    print("sort test")
     test.createOrReplaceTempView('test_table')
     test = spark.sql('SELECT * FROM test_table LIMIT 50000')
-#     test = test.sample(withReplacement = False, fraction = 0.4)    
-    print("sql test")
+#     test = test.sample(withReplacement = False, fraction = 0.4)
     model = ALSModel.load(model_file)
-    print("loaded model")
     
     user_subset = test.select("user").distinct()
-    print("select users")
     user_subset = model.recommendForUserSubset(user_subset, 500)
     
     user_subset = user_subset.select("user", col("recommendations.item").alias("item"))
-    print("select recs")
     user_subset = user_subset.sort('user', ascending=False)
     print("sort user")
-#     user_subset = user_subset.repartition(500)
-#     test = test.repartition(500)
     predictionAndLabels = user_subset.join(test,["user"], "inner").rdd.map(lambda tup: (tup[1], tup[2]))
     print("joined predictions and counts")
 
@@ -65,10 +57,10 @@ if __name__ == "__main__":
     spark = SparkSession.builder.appName('recommender_test').getOrCreate()
 
     # Get the model from the command line
-    model_file = sys.argv[3]
+    model_file = sys.argv[1]
 
     # And the test file
-    test_file = sys.argv[4]
+    test_file = sys.argv[2]
 
     # Call our main routine
     main(spark, model_file, test_file)
