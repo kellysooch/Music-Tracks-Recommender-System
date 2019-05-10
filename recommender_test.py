@@ -27,8 +27,8 @@ def main(spark, model_file, test_file):
     test = spark.read.parquet(test_file)
     test = test.sort('user')
     test.createOrReplaceTempView('test_table')
-    test = spark.sql('SELECT * FROM test_table LIMIT 1000')
-    print(test.take(10))
+    test = spark.sql('SELECT * FROM test_table LIMIT 100')
+#     print(test.take(10))
 #     test = test.sample(withReplacement = False, fraction = 0.4)
     model = ALSModel.load(model_file)
     
@@ -40,7 +40,7 @@ def main(spark, model_file, test_file):
 #     print(user_subset.take(10))
     print("sort user")
     predictionAndLabels = user_subset.join(test,["user"], "inner").rdd.map(lambda tup: (tup[1], tup[2]))
-#     print(predictionAndLabels.take(10))
+    print(predictionAndLabels.take(10))
     print("joined predictions and counts")
 
 #     metrics = RankingMetrics(predictionAndLabels)
