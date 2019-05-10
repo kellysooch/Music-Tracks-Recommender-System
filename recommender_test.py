@@ -43,7 +43,7 @@ def main(spark, model_file, test_file):
 #     print(predictionAndLabels.take(10))
     print("joined predictions and counts")
 
-    metrics = RankingMetrics(predictionAndLabels)
+#     metrics = RankingMetrics(predictionAndLabels)
     print("made metrics")
     MAP = metrics.meanAveragePrecision
     precision = metrics.precisionAt(500)
