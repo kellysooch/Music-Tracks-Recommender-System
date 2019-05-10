@@ -34,7 +34,7 @@ def main(spark, indexer_user, indexer_item, train_data_file, val_data_file):
     
     train = user_index.transform(train)
     train = item_index.transform(train)
-    
+    train = train.sample(withReplacement = False, fraction = 0.8)
     rank = [10, 20, 30] #default is 10
     regularization = [ .01, .1, 1] #default is 1
     alpha = [ .1, .5, 1] #default is 1
