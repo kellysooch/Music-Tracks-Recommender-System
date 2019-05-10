@@ -38,6 +38,7 @@ def main(spark, model_file, test_file):
     user_subset = user_subset.sort('user')
     print("sort user")
     predictionAndLabels = user_subset.join(test,["user"], "inner").rdd.map(lambda tup: (tup[1], tup[2]))
+    print(predictionAndLabels.take(10))
     print("joined predictions and counts")
 
     metrics = RankingMetrics(predictionAndLabels)
