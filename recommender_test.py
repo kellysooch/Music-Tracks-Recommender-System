@@ -25,7 +25,7 @@ def main(spark, model_file, test_file):
 
     # Load the parquet file
     test = spark.read.parquet(test_file)
-    test = test.sort('user')
+    test = test.sort('user', ascending=False)
     test.createOrReplaceTempView('test_table')
     test = spark.sql('SELECT * FROM test_table LIMIT 50000')
 #     print(test.take(10))
@@ -36,7 +36,7 @@ def main(spark, model_file, test_file):
     user_subset = model.recommendForUserSubset(user_subset, 500)
     
     user_subset = user_subset.select("user", col("recommendations.item").alias("item"))
-    user_subset = user_subset.sort('user')
+    user_subset = user_subset.sort('user', ascending=False)
 #     print(user_subset.take(10))
     print("sort user")
     predictionAndLabels = user_subset.join(test,["user"], "inner").rdd.map(lambda tup: (tup[1], tup[2]))
