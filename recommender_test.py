@@ -27,7 +27,7 @@ def main(spark, model_file, test_file):
     test = spark.read.parquet(test_file)
     test = test.sort('user')
     test.createOrReplaceTempView('test_table')
-    test = spark.sql('SELECT * FROM test_table LIMIT 100')
+    test = spark.sql('SELECT * FROM test_table LIMIT 10000')
 #     print(test.take(10))
 #     test = test.sample(withReplacement = False, fraction = 0.4)
     model = ALSModel.load(model_file)
