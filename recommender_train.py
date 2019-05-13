@@ -37,7 +37,7 @@ def main(spark, indexer_user, indexer_item, train_data_file, val_data_file):
 #     train = train.sample(withReplacement = False, fraction = 0.8)
     rank = [10, 20, 30] #default is 10
     regularization = [ .01, .1, 1] #default is 1
-    alpha = [ .1, .5, 1] #default is 1
+    alpha = [ .5, 1, 10] #default is 1
     
     rank_list = []
     reg_list = []
@@ -61,6 +61,8 @@ def main(spark, indexer_user, indexer_item, train_data_file, val_data_file):
                 reg_list.append(j)
                 alpha_list.append(k)
                 precisions.append(precision)
+                print('rank: %f, reg: %f, alpha: %f' % (i, j, k))
+                print(precision)
     
     print(rank_list)
     print(reg_list)
