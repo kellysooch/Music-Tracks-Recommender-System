@@ -61,6 +61,7 @@ def main(spark, indexer_user, indexer_item, train_data_file, val_data_file):
                 reg_list.append(j)
                 alpha_list.append(k)
                 precisions.append(precision)
+                print(precision)
     
     print(rank_list)
     print(reg_list)
