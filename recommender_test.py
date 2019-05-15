@@ -27,10 +27,6 @@ def main(spark, model_file, test_file):
     test = spark.read.parquet(test_file)
     test = test.sort('user', ascending=False)
     test.createOrReplaceTempView('test_table')
-    test = spark.sql('SELECT * FROM test_table LIMIT 5000')
-#     print(test.take(10))
-#     test = test.sample(withReplacement = False, fraction = 0.4)
-    test.printSchema()
     model = ALSModel.load(model_file)
     
     user_subset = test.select("user").distinct()
@@ -38,11 +34,8 @@ def main(spark, model_file, test_file):
     
     user_subset = user_subset.select("user", col("recommendations.item").alias("item"))
     user_subset = user_subset.sort('user', ascending=False)
-    user_subset.printSchema()
-#     print(user_subset.take(10))
     print("sort user")
     predictionAndLabels = user_subset.join(test,["user"], "inner").rdd.map(lambda tup: (tup[1], tup[2]))
-#     print(predictionAndLabels.take(10))
     print("joined predictions and counts")
 
     metrics = RankingMetrics(predictionAndLabels)
